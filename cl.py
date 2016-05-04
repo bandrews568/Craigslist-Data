@@ -1,59 +1,127 @@
-#!/usr/bin/python
-
 import urllib2
+import re
+import itertools
+import sys
+import time 
 
 from bs4 import BeautifulSoup
 
-#Get user query and replace all spaces with underscores
-user_search = raw_input("Enter search: ").replace(" ", "_")
-
-#Request variables 
-url = 'https://raleigh.craigslist.org/search/sss?sort=rel&query={}'.format(str(user_search))
-req = urllib2.Request(url)
-page = urllib2.urlopen(req)
-soup = BeautifulSoup(page.read(), 'html.parser')
+listing_title = []
+price_data = []
+cl_data = {}
 
 
-#Query lists
-listing_title = [link.text for link in soup.find_all("span", {"id" : "titletextonly"})]
-
-#Check for results
-no_results = soup.find("span", {"class" : "button pagenum"}).text
-
-if no_results == "no results":
-	no_results = False
-	print "No results found"
-
-else: #Results were found
-	results_found = soup.find("span", {"class" : "totalcount"}).text
-	print "Found {} results".format(results_found)
+def getresults(query):
 	
-	if len(results_found) >= 1:
-		
-		if len(results_found) == 4:
-			results_found = results[:2] + "00"
-			results_found = int(results_found)
-			print results_found
-		
-		elif len(results_found) == 3:
-			results_found = results_found[0] + "00"
-			results_found = int(results_found)
-			print results_found
-	
+	global cl_data
+	global listing_title
+	global price_data
+
+	def makesoup(address):
+		req = urllib2.Request(address)
+		page = urllib2.urlopen(req)
+		soup = BeautifulSoup(page.read(), 'html.parser')
+		return soup
+
+	query = query.replace(" ", "_")
+	url = 'https://raleigh.craigslist.org/search/sss?sort=priceasc&query={}'.format(str(query))
+	results_found = makesoup(url).find("span", {"class" : "button pagenum"}).text
+
+	if results_found != "no results":
+		total_results = makesoup(url).find("span", {"class" : "totalcount"}).text
+		print "Found {} results".format(total_results)
+				
+		if len(total_results) >= 1:
+			
+			if len(total_results) == 4:
+				raw_total_results = total_results
+				total_results = total_results[:2] + "00"
+				total_results = int(total_results)
+				more_results = True
+
+			elif len(total_results) == 3:
+				raw_total_results = total_results
+				total_results = total_results[0] + "00"
+				total_results = int(total_results)
+				more_results = True
+
+			elif len(total_results) <= 2:
+				more_results = False
+				listing_title = [link.text for link in makesoup(url).find_all("span", {"id" : "titletextonly"})]
+				price_data = [str(price.text.strip("$")) \
+	              			  for price in makesoup(url).find_all("span", {"class" : "price"})[::2]]
+	        	cl_data = _makedic(listing_title, price_data)
+
+			price_data = []
+			listing_title = []
+			scrape_total = raw_total_results
+			scrape_count = 0
+			
+			while total_results >= 0 and more_results != False:
+				url = 'https://raleigh.craigslist.org/search/sss?s={}&query={}&sort=priceasc'.format(total_results, str(query))
+				price = makesoup(url).find_all("span", {"class" : "price"})[::2]
+				title = makesoup(url).find_all("span", {"id" : "titletextonly"})
+				print "Scraping url: \n{}".format(url)	
+	   			for value in price: price_data.append(value.text.strip("$"))
+	   			for name in title: listing_title.append(name.text)
+	   			time.sleep(1)	   			
+	   			total_results -= 100
+	   			scrape_count += len(title)
+	   			print "Scraped {}/{} items".format(scrape_count, scrape_total)
+	   			if total_results == 0:
+	   				url = 'https://raleigh.craigslist.org/search/sss?sort=priceasc&query={}'.format(str(query))
+	   				price = makesoup(url).find_all("span", {"class" : "price"})[::2]
+					title = makesoup(url).find_all("span", {"id" : "titletextonly"})
+	   				print "Scraping url: \n{}".format(url)
+	   				for value in price: price_data.append(value.text.strip("$"))
+	   				for name in title: listing_title.append(name.text)
+	   				cl_data = _makedic(listing_title, price_data)
+	   				scrape_count += len(title)
+	   				print "Scraped {}/{} items".format(scrape_count, scrape_total)
+	   				break
+
 	else:
-		more_results = False 
+		print "No results found"
 
+def _makedic(title, price):
+	"""	Called inside of getresults()
+		Returns a dictionary with title as the key
+	   	and price as the value. 
+	""" 
+	raw_dic = dict(itertools.izip(title, price))
+	return raw_dic
 
+def averageprice(price, lowhigh=None):
+	""" Returns the average price from all elements in a list
+	    or tuple.
+	    Takes optional paramater of lowhigh that will print out
+	    the lowest and highest price.
+	"""	
+	total = 0
+	for value in price:
+		total += int(value.strip("$"))
+		print value
+	print "Average price: ${}".format(total / len(price))
+		
+	if lowhigh:
+		price = sorted(price, key=int)
+		print "Low price: ${} \nHigh price: ${}".format(price[0], price[-1])
 
-item_price = soup.find_all("span", {"class" : "price"})
-#Have to append every 2nd element because two prices are listed
-#for every item and will throw off averages
-price_data = [x.text.strip("$") for x in item_price[::2]]
-print sorted(price_data, key=int)
+def filtered_data(dic, query):
+	"""Filter results for a specfic string in
+	   title.
+	"""
+	filtered_dic = {}
 
+	for key, value in dic.items():
+		if query.replace("_", " ") in key.lower():
+			filtered_dic[key] = value
+	return filtered_dic
 
-#Example url for number of items (s={}).format(number_of_items)
-#https://raleigh.craigslist.org/search/sss?s=100&query=iphone&sort=rel
-
-
+def sortdata(dic, descending=None):
+#Make it will where it return a sorted dictionary 
+	if descending:
+		return sorted(dic, key=int, reverse=True)
+	else:
+		return sorted(dic)
 
