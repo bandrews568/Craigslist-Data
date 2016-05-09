@@ -1,7 +1,5 @@
 import urllib2
-import re
 import itertools
-import sys
 import time 
 
 from bs4 import BeautifulSoup
@@ -29,10 +27,9 @@ def getresults(query):
 
 	if results_found != "no results":
 		total_results = makesoup(url).find("span", {"class" : "totalcount"}).text
-		print "Found {} results".format(total_results)
+		print "Found {} results for \"{}\"".format(total_results, query.replace("_", " "))
 				
-		if len(total_results) >= 1:
-			
+		if len(total_results) >= 1:			
 			if len(total_results) == 4:
 				raw_total_results = total_results
 				total_results = total_results[:2] + "00"
@@ -85,43 +82,61 @@ def getresults(query):
 
 def _makedic(title, price):
 	"""	Called inside of getresults()
-		Returns a dictionary with title as the key
-	   	and price as the value. 
+		Returns a dictionary with global variable listing_title as the key
+	   	and global variable price_data as the value. 
 	""" 
 	raw_dic = dict(itertools.izip(title, price))
 	return raw_dic
 
 def averageprice(price, lowhigh=None):
 	""" Returns the average price from all elements in a list
-	    or tuple.
-	    Takes optional paramater of lowhigh that will print out
+	    or dict.
+	    Takes optional paramater of lowhigh=True that will print out
 	    the lowest and highest price.
 	"""	
-	total = 0
-	for value in price:
-		total += int(value.strip("$"))
-		print value
-	print "Average price: ${}".format(total / len(price))
+	if type(price) == list:		
+		total = 0		
+		for value in price:
+			total += int(value.strip("$"))
+		print "Average price: ${}".format(total / len(price))
 		
-	if lowhigh:
-		price = sorted(price, key=int)
-		print "Low price: ${} \nHigh price: ${}".format(price[0], price[-1])
+		if lowhigh:
+			price = sorted(price, key=int)
+			print "Low price: ${} \nHigh price: ${}".format(price[0], price[-1])
+	
+	elif type(price) == dict:
+		total = 0
+		for key, value in price.items():
+			total += int(value.strip("$"))
+		print "Average price: ${}".format(total / len(price))
+
+		if lowhigh:
+			sorted_items = sorted(price.items(), key = lambda (key,value): int(value))
+			print "Low price: \n{} \nHigh price: \n{}".format(sorted_items[0], sorted_items[-1])
+	else:
+		raise TypeError("Got {} expected list or dict".format(type(price)))
 
 def filtered_data(dic, query):
 	"""Filter results for a specfic string in
 	   title.
 	"""
-	filtered_dic = {}
-
-	for key, value in dic.items():
-		if query.replace("_", " ") in key.lower():
-			filtered_dic[key] = value
-	return filtered_dic
+	if type(dic) == dict:
+		filtered_dic = {}
+		for key, value in dic.items():
+			if type(query) ==  str or int:
+				if query.lower() in key.lower():
+					filtered_dic[key] = value
+			else:
+				raise TypeError("Got {} expected str or int for query".format(type(dic)))
+		return filtered_dic
+	else:
+		raise TypeError("Got {} expected dict".format(type(dic)))
 
 def sortdata(dic, descending=None):
-#Make it will where it return a sorted dictionary 
-	if descending:
-		return sorted(dic, key=int, reverse=True)
+	if type(dic) == dict:
+		if descending:
+			return sorted(price.items(), key = lambda (key,value): int(value), reverse = True)
+		else:
+			return sorted(price.items(), key = lambda (key,value): int(value))
 	else:
-		return sorted(dic)
-
+		raise TypeError("Got {} expected dict".format(type(dic)))
