@@ -59,8 +59,8 @@ class CraigslistData(object):
 								{"class" : "totalcount"}).text
 				
 				print 'Found {} results for "{}" in {}'.format(total_results, 
-														self.og_query,
-														key)
+										self.og_query,
+										key)
 
 				if len(total_results):
 					if len(total_results) == 4:
@@ -106,7 +106,7 @@ class CraigslistData(object):
 
 					for url in _link:
 						self.link.append("https://{}.craigslist.org".format(key) + \
-										url.get("href"))
+								 url.get("href"))
 								
 					value = re.sub("s=\d*$", "s=", value)
 					results_total -= 100
