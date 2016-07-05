@@ -17,6 +17,7 @@ class CraigslistData(object):
 		self.title = []
 		self.price = []
 		self.link = []
+		self.complete_list = []
 
 	def makesoup(self, url):
 		req = urllib2.Request(url)
@@ -59,8 +60,8 @@ class CraigslistData(object):
 								{"class" : "totalcount"}).text
 				
 				print 'Found {} results for "{}" in {}'.format(total_results, 
-										self.og_query,
-										key)
+														self.og_query,
+														key)
 
 				if len(total_results):
 					if len(total_results) == 4:
@@ -73,18 +74,46 @@ class CraigslistData(object):
 
 					else:
 						more_pages = False
-						self.title = [listing.text for listing in \
-								self.makesoup(value).find_all( 
-								"span", {"id" : "titletextonly"})]
-						self.price = [value.text for value in \
-								self.makesoup(value).find_all( 
-								"span", {"class" : "price"})[::2]]
-						self.link = ["https://{}.craigslist.org".format(key) + \
-								url.get("href") for url in \
-							   	self.makesoup(value).find_all(
-								"a", {"class": "hdrlnk"})]
-				
-				results_total = raw_total
+						"""
+							Craigslist will suggest results from nearby cities
+							if there isn't many local results. Total results
+							takes into account only the local area results. So
+							we void out the extra nonlocal results by incrementing
+							total_count to equal total_results then break the loop.
+							Checking to see if the href starts with // will cancel 
+							the links of the extra nonlocal results out.
+						"""
+						total_count = 0
+
+						for listing in self.makesoup(value).find_all( \
+										"span", {"id" : "titletextonly"}):
+							if total_count != int(total_results):
+								self.title.append(listing.text)
+								total_count += 1
+							elif total_count == int(total_results):
+								break
+
+						total_count = 0
+						
+						for amount in self.makesoup(value).find_all( \
+										"span", {"class" : "price"})[::2]:
+							if total_count != int(total_results):
+								self.price.append(amount.text)
+								total_count += 1
+							elif total_count == int(total_results):
+								break
+						
+						for url in self.makesoup(value).find_all( \
+										"a", {"class": "hdrlnk"}):
+							if url.get("href").startswith("//"):
+								pass
+							else:
+								self.link.append("https://{}.".format(key) + \
+										"craigslist.org" + url.get("href"))
+
+						total_count += 1
+
+				results_total = raw_total if more_pages else None
 				
 				while results_total >= 0 and more_pages:
 
@@ -106,17 +135,28 @@ class CraigslistData(object):
 
 					for url in _link:
 						self.link.append("https://{}.craigslist.org".format(key) + \
-								 url.get("href"))
+										url.get("href"))
 								
 					value = re.sub("s=\d*$", "s=", value)
 					results_total -= 100
 										
 			else:
 				print 'No results found for "{}" in {}'.format(self.og_query, key)
+
+		if len(self.city_not_found):
+			print "Couldn't find URL's for {}".format(self.city_not_found)
+
+	def write_to_file(self):
+		complete_list = zip(self.title, self.price, self.link)
+		
+		with open(time.strftime("%m-%d-%Y_%H:%M.txt"), "w+") as f:
+			for line in complete_list:
+				f.write(str(line) + "\n\n")
 				
 	def main(self):
 		self.get_cities()
 		self.scrape_data()
+		self.write_to_file()
 
 if __name__ == '__main__':	
 	CraigslistData().main()
