@@ -36,8 +36,7 @@ class CraigslistData(object):
 					    'search/sss?sort=priceasc&query={}&s='.format(str(self.query))
 
 					elif city.startswith("https://") and city.endswith(".org"):
-						strip_city = re.compile("https://(.*).craigslist.org") ASD 
-						
+						strip_city = re.compile("https://(.*).craigslist.org") 
 						city_found = str(strip_city.findall(city)).strip("'[]'")
 						self.user_city_dic[city_found] = city + \
 													'/search/sss?sort' + \
