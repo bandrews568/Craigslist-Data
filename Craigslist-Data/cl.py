@@ -40,9 +40,8 @@ class CraigslistData(object):
 						
 						city_found = str(strip_city.findall(city)).strip("'[]'")
 						self.user_city_dic[city_found] = city + \
-														'/search/sss?sort' + \
+													'/search/sss?sort' + \
 								'=priceasc&query={}&s='.format(str(self.query))
-						print self.user_city_dic
 
 					else:
 						self.city_not_found.append(city)
