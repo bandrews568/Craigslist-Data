@@ -47,7 +47,7 @@ class CraigslistData(object):
 					'search/sss?sort=priceasc&query={}&s='.format(str(self.query))
 
 				else:
-					self.city_not_found.append(city)
+					self.city_not_found.append(city) 
 			
 	def scrape_data(self):
 
