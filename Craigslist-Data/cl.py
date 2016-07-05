@@ -47,7 +47,7 @@ class CraigslistData(object):
 					'search/sss?sort=priceasc&query={}&s='.format(str(self.query))
 
 				else:
-					self.city_not_found.append(city) 
+					self.city_not_found.append(city)
 			
 	def scrape_data(self):
 
@@ -60,8 +60,8 @@ class CraigslistData(object):
 								{"class" : "totalcount"}).text
 				
 				print 'Found {} results for "{}" in {}'.format(total_results, 
-							self.og_query,
-							key)
+														self.og_query,
+														key)
 
 				if len(total_results):
 					if len(total_results) == 4:
@@ -75,13 +75,13 @@ class CraigslistData(object):
 					else:
 						more_pages = False
 						"""
-							Craigslist will suggest results from nearby cities
-							if there isn't many local results. Total results
-							takes into account only the local area results. So
-							we void out the extra nonlocal results by incrementing
-							total_count to equal total_results then break the loop.
-							Checking to see if the href starts with // will cancel 
-							the links of the extra nonlocal results out.
+						Craigslist will suggest results from nearby cities
+						if there isn't many local results. Total results
+						takes into account only the local area results. So
+						we void out the extra nonlocal results by incrementing
+						total_count to equal total_results then break the loop.
+						Checking to see if the href starts with // will cancel 
+						the links of the extra nonlocal results out.
 						"""
 						total_count = 0
 
@@ -96,7 +96,7 @@ class CraigslistData(object):
 						total_count = 0
 						
 						for amount in self.makesoup(value).find_all( \
-										"span", {"class" : "price"})[::2]:
+									"span", {"class" : "price"})[::2]:
 							if total_count != int(total_results):
 								self.price.append(amount.text)
 								total_count += 1
@@ -110,8 +110,6 @@ class CraigslistData(object):
 							else:
 								self.link.append("https://{}.".format(key) + \
 										"craigslist.org" + url.get("href"))
-
-						total_count += 1
 
 				results_total = raw_total if more_pages else None
 				
