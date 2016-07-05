@@ -60,8 +60,8 @@ class CraigslistData(object):
 								{"class" : "totalcount"}).text
 				
 				print 'Found {} results for "{}" in {}'.format(total_results, 
-														self.og_query,
-														key)
+															self.og_query,
+															key)
 
 				if len(total_results):
 					if len(total_results) == 4:
