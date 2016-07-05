@@ -34,6 +34,16 @@ class CraigslistData(object):
 					if city in CITY_DICT:
 						self.user_city_dic[city] = "https://" + CITY_DICT.get(city) + \
 					    'search/sss?sort=priceasc&query={}&s='.format(str(self.query))
+
+					elif city.startswith("https://") and city.endswith(".org"):
+						strip_city = re.compile("https://(.*).craigslist.org") ASD 
+						
+						city_found = str(strip_city.findall(city)).strip("'[]'")
+						self.user_city_dic[city_found] = city + \
+														'/search/sss?sort' + \
+								'=priceasc&query={}&s='.format(str(self.query))
+						print self.user_city_dic
+
 					else:
 						self.city_not_found.append(city)
 			except:
@@ -61,7 +71,7 @@ class CraigslistData(object):
 				
 				print 'Found {} results for "{}" in {}'.format(total_results, 
 														self.og_query,
-														key) 
+														key)
 
 				if len(total_results):
 					if len(total_results) == 4:
@@ -73,7 +83,6 @@ class CraigslistData(object):
 						more_pages = True
 
 					else:
-						more_pages = False
 						"""
 						Craigslist will suggest results from nearby cities
 						if there isn't many local results. Total results
@@ -83,6 +92,7 @@ class CraigslistData(object):
 						Checking to see if the href starts with // will cancel 
 						the links of the extra nonlocal results out.
 						"""
+						more_pages = False
 						total_count = 0
 
 						for listing in self.makesoup(value).find_all( \
