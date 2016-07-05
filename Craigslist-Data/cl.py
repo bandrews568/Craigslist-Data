@@ -61,7 +61,7 @@ class CraigslistData(object):
 				
 				print 'Found {} results for "{}" in {}'.format(total_results, 
 														self.og_query,
-														key)
+														key) 
 
 				if len(total_results):
 					if len(total_results) == 4:
