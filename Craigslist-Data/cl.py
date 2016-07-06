@@ -4,7 +4,8 @@ import time
 import urllib2
 import itertools
 
-from citydict import CITY_DICT
+from searchdata import CITY_DICT
+from searchdata import ITEM_CATAGORY
 from bs4 import BeautifulSoup
 
 class CraigslistData(object):
@@ -24,23 +25,32 @@ class CraigslistData(object):
 		page = urllib2.urlopen(req)
 		soup = BeautifulSoup(page.read(), 'html.parser')
 		return soup
-	
+	#https://raleigh.craigslist.org/search/ata?s=100&query=chair
 	def get_cities(self):
+		strip_url = re.compile("https://(.*).craigslist.org")
+
+		if len(sys.argv) == 4:
+			if len(sys.argv[3]) == 3:
+				item_url = "/search/{}?&query={}s=".format( \
+							str(sys.argv[3]), self.query)			
+			else:
+				raise ValueError("Catagory must be 3 characters long")
+		
+		else:
+			item_url = 'search/sss?sort=priceasc&query={}&s='.format(str(self.query))
+
 		if sys.argv[2].endswith(".txt"): 			
 			try:
 				with open(sys.argv[2], 'r') as f:
 					user_cities = re.split(",", f.read().strip('\n').lower())
 				for city in user_cities:
 					if city in CITY_DICT:
-						self.user_city_dic[city] = "https://" + CITY_DICT.get(city) + \
-					    'search/sss?sort=priceasc&query={}&s='.format(str(self.query))
+						self.user_city_dic[city] = "https://" + \
+												CITY_DICT.get(city) + item_url
 
 					elif city.startswith("https://") and city.endswith(".org"):
-						strip_city = re.compile("https://(.*).craigslist.org") 
-						city_found = str(strip_city.findall(city)).strip("'[]'")
-						self.user_city_dic[city_found] = city + \
-													'/search/sss?sort' + \
-								'=priceasc&query={}&s='.format(str(self.query))
+						city_found = str(strip_url.findall(city)).strip("'[]'")
+						self.user_city_dic[city_found] = city + item_url
 
 					else:
 						self.city_not_found.append(city)
@@ -52,7 +62,11 @@ class CraigslistData(object):
 			for city in user_cities:
 				if city in CITY_DICT:
 					self.user_city_dic[city] = "https://" + CITY_DICT.get(city) + \
-					'search/sss?sort=priceasc&query={}&s='.format(str(self.query))
+												item_url
+
+				elif city.startswith("https://") and city.endswith(".org"):
+					city_found = str(strip_url.findall(city)).strip("'[]'")
+					self.user_city_dic[city_found] = city + item_url
 
 				else:
 					self.city_not_found.append(city)
@@ -61,7 +75,7 @@ class CraigslistData(object):
 
 		for key, value in self.user_city_dic.items():
 			results_found = self.makesoup(value).find("span", \
-							{"class" : "button pagenum"}).text
+								{"class" : "button pagenum"}).text
 			
 			if results_found != "no results":
 				total_results = self.makesoup(value).find("span", \
@@ -93,6 +107,8 @@ class CraigslistData(object):
 						more_pages = False
 						total_count = 0
 
+						print "Scraping url: {}".format(value)
+
 						for listing in self.makesoup(value).find_all( \
 										"span", {"id" : "titletextonly"}):
 							if total_count != int(total_results):
@@ -123,7 +139,11 @@ class CraigslistData(object):
 				
 				while results_total >= 0 and more_pages:
 
-					value = value + "{}".format(results_total)
+					if len(sys.argv) == 4:
+						value = value + "{}".format(results_total)
+					else:
+						value = value + "{}".format(results_total)
+
 					_title = self.makesoup(value).find_all( \
 						"span", {"id" : "titletextonly"})
 					_price = self.makesoup(value).find_all( \
