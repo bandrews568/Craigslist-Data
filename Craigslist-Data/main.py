@@ -62,7 +62,7 @@ class CraigslistData(object):
 			for city in user_cities:
 				if city in CITY_DICT:
 					self.user_city_dic[city] = "https://" + CITY_DICT.get(city) + \
-												item_url
+								    item_url
 
 				elif city.startswith("https://") and city.endswith(".org"):
 					city_found = str(strip_url.findall(city)).strip("'[]'")
@@ -75,15 +75,15 @@ class CraigslistData(object):
 
 		for key, value in self.user_city_dic.items():
 			results_found = self.makesoup(value).find("span", \
-								{"class" : "button pagenum"}).text
+							{"class" : "button pagenum"}).text
 			
 			if results_found != "no results":
 				total_results = self.makesoup(value).find("span", \
 								{"class" : "totalcount"}).text
 				
 				print 'Found {} results for "{}" in {}'.format(total_results, 
-														self.og_query,
-														key)
+												self.og_query,
+												key)
 
 				if len(total_results):
 					if len(total_results) == 4:
