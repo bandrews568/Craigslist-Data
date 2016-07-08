@@ -38,7 +38,7 @@ class CraigslistData(object):
 
 		else:
 			item_url = "/search/sss?sort=priceasc" + \
-						"&query={}&s=".format(str(self.query))
+					"&query={}&s=".format(str(self.query))
 
 		if sys.argv[2].endswith(".txt"): 			
 			try:
