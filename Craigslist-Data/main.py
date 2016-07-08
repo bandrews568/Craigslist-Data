@@ -1,11 +1,11 @@
+import os
 import re
 import sys
 import time
 import urllib2
 import itertools
 
-from searchdata import CITY_DICT
-from searchdata import ITEM_CATAGORY
+from searchdata import CITY_DICT, ITEM_CATAGORY
 from bs4 import BeautifulSoup
 
 class CraigslistData(object):
@@ -25,19 +25,20 @@ class CraigslistData(object):
 		page = urllib2.urlopen(req)
 		soup = BeautifulSoup(page.read(), 'html.parser')
 		return soup
-	#https://raleigh.craigslist.org/search/ata?s=100&query=chair
+
 	def get_cities(self):
 		strip_url = re.compile("https://(.*).craigslist.org")
 
 		if len(sys.argv) == 4:
-			if len(sys.argv[3]) == 3:
+			if sys.argv[3] in ITEM_CATAGORY:
 				item_url = "/search/{}?&query={}s=".format( \
-							str(sys.argv[3]), self.query)			
+							str(sys.argv[3]), self.query)
 			else:
-				raise ValueError("Catagory must be 3 characters long")
-		
+				raise ValueError('Invaild Catagory: {}'.format(sys.argv[3]))			
+
 		else:
-			item_url = 'search/sss?sort=priceasc&query={}&s='.format(str(self.query))
+			item_url = "/search/sss?sort=priceasc" + \
+						"&query={}&s=".format(str(self.query))
 
 		if sys.argv[2].endswith(".txt"): 			
 			try:
@@ -45,12 +46,15 @@ class CraigslistData(object):
 					user_cities = re.split(",", f.read().strip('\n').lower())
 				for city in user_cities:
 					if city in CITY_DICT:
+						#URL's in CITY_DICT end with a "/" so we have sub it 
+						#out of item_url
 						self.user_city_dic[city] = "https://" + \
-												CITY_DICT.get(city) + item_url
+												CITY_DICT.get(city) + \
+												re.sub("/", "", item_url, 1) 
 
 					elif city.startswith("https://") and city.endswith(".org"):
 						city_found = str(strip_url.findall(city)).strip("'[]'")
-						self.user_city_dic[city_found] = city + item_url
+						self.user_city_dic[city_found] = city + item_url 
 
 					else:
 						self.city_not_found.append(city)
@@ -61,8 +65,10 @@ class CraigslistData(object):
 			user_cities = sys.argv[2].lower().split(",")
 			for city in user_cities:
 				if city in CITY_DICT:
+					#URL's in CITY_DICT end with a "/" so we have to sub it 
+					#out of item_url
 					self.user_city_dic[city] = "https://" + CITY_DICT.get(city) + \
-								    item_url
+												re.sub("/", "", item_url, 1)
 
 				elif city.startswith("https://") and city.endswith(".org"):
 					city_found = str(strip_url.findall(city)).strip("'[]'")
@@ -72,18 +78,24 @@ class CraigslistData(object):
 					self.city_not_found.append(city)
 			
 	def scrape_data(self):
+		scrape_count = 0
 
 		for key, value in self.user_city_dic.items():
-			results_found = self.makesoup(value).find("span", \
-							{"class" : "button pagenum"}).text
+			try:
+				results_found = self.makesoup(value).find("span", 
+								{"class" : "button pagenum"}).text
+			except: 
+				print "Invalid URL: {}".format(value)
+				continue
 			
 			if results_found != "no results":
-				total_results = self.makesoup(value).find("span", \
+				total_results = self.makesoup(value).find("span", 
 								{"class" : "totalcount"}).text
+				scrape_count += int(total_results)
 				
 				print 'Found {} results for "{}" in {}'.format(total_results, 
-					self.og_query,
-					key)
+														self.og_query,
+														key)
 
 				if len(total_results):
 					if len(total_results) == 4:
@@ -138,11 +150,7 @@ class CraigslistData(object):
 				results_total = raw_total if more_pages else None
 				
 				while results_total >= 0 and more_pages:
-
-					if len(sys.argv) == 4:
-						value = value + "{}".format(results_total)
-					else:
-						value = value + "{}".format(results_total)
+					value = value + "{}".format(results_total)
 
 					_title = self.makesoup(value).find_all( \
 						"span", {"id" : "titletextonly"})
@@ -170,14 +178,19 @@ class CraigslistData(object):
 				print 'No results found for "{}" in {}'.format(self.og_query, key)
 
 		if len(self.city_not_found):
-			print "Couldn't find URL's for {}".format(self.city_not_found)
+			print "Couldn't find URL's for: {}".format(self.city_not_found)
+
+		print "Total results scraped: {}".format(scrape_count)
 
 	def write_to_file(self):
 		complete_list = zip(self.title, self.price, self.link)
-		
-		with open(time.strftime("%m-%d-%Y_%H:%M.txt"), "w+") as f:
+		filename = time.strftime("%m-%d-%Y_%H:%M.txt")
+
+		with open(filename, "w+") as f:
 			for line in complete_list:
 				f.write(str(line) + "\n\n")
+
+		print "Results located in: {}\nFilename: {}".format(os.getcwd(), filename)
 				
 	def main(self):
 		self.get_cities()
