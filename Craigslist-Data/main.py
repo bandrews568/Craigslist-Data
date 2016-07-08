@@ -5,7 +5,7 @@ import time
 import urllib2
 import itertools
 
-from searchdata import CITY_DICT, ITEM_CATAGORY
+from searchdata import CITY_DICT, ITEM_CATEGORY
 from bs4 import BeautifulSoup
 
 class CraigslistData(object):
@@ -30,7 +30,7 @@ class CraigslistData(object):
 		strip_url = re.compile("https://(.*).craigslist.org")
 
 		if len(sys.argv) == 4:
-			if sys.argv[3] in ITEM_CATAGORY:
+			if sys.argv[3] in ITEM_CATEGORY:
 				item_url = "/search/{}?&query={}s=".format( \
 						str(sys.argv[3]), self.query)
 			else:
