@@ -728,7 +728,7 @@ CITY_DICT = {u'Canada': u'#CA',
 	u'charleston ': u'charlestonwv.craigslist.org/'
 }
 
-ITEM_CATAGORY = [
+ITEM_CATEGORY = [
 	u'ccc', u'act', u'ats', u'kid', u'cls', u'eve', u'com', 
 	u'grp', u'vnn', u'laf', u'muc', u'pet', u'pol', u'rid', u'vol', u'stp', 
 	u'w4w', u'w4m', u'm4w', u'm4m', u'msr', u'cas', u'mis', u'rnr', u'forums', 
