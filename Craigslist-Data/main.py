@@ -32,7 +32,7 @@ class CraigslistData(object):
 		if len(sys.argv) == 4:
 			if sys.argv[3] in ITEM_CATAGORY:
 				item_url = "/search/{}?&query={}s=".format( \
-							str(sys.argv[3]), self.query)
+						str(sys.argv[3]), self.query)
 			else:
 				raise ValueError('Invaild Catagory: {}'.format(sys.argv[3]))			
 
@@ -49,8 +49,8 @@ class CraigslistData(object):
 						#URL's in CITY_DICT end with a "/" so we have sub it 
 						#out of item_url
 						self.user_city_dic[city] = "https://" + \
-											CITY_DICT.get(city) + \
-											re.sub("/", "", item_url, 1) 
+										CITY_DICT.get(city) + \
+										re.sub("/", "", item_url, 1) 
 
 					elif city.startswith("https://") and city.endswith(".org"):
 						city_found = str(strip_url.findall(city)).strip("'[]'")
@@ -68,7 +68,7 @@ class CraigslistData(object):
 					#URL's in CITY_DICT end with a "/" so we have to sub it 
 					#out of item_url
 					self.user_city_dic[city] = "https://" + CITY_DICT.get(city) + \
-											re.sub("/", "", item_url, 1)
+								re.sub("/", "", item_url, 1)
 
 				elif city.startswith("https://") and city.endswith(".org"):
 					city_found = str(strip_url.findall(city)).strip("'[]'")
