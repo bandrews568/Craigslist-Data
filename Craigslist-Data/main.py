@@ -49,8 +49,8 @@ class CraigslistData(object):
 						#URL's in CITY_DICT end with a "/" so we have sub it 
 						#out of item_url
 						self.user_city_dic[city] = "https://" + \
-												CITY_DICT.get(city) + \
-												re.sub("/", "", item_url, 1) 
+											CITY_DICT.get(city) + \
+											re.sub("/", "", item_url, 1) 
 
 					elif city.startswith("https://") and city.endswith(".org"):
 						city_found = str(strip_url.findall(city)).strip("'[]'")
@@ -68,7 +68,7 @@ class CraigslistData(object):
 					#URL's in CITY_DICT end with a "/" so we have to sub it 
 					#out of item_url
 					self.user_city_dic[city] = "https://" + CITY_DICT.get(city) + \
-												re.sub("/", "", item_url, 1)
+											re.sub("/", "", item_url, 1)
 
 				elif city.startswith("https://") and city.endswith(".org"):
 					city_found = str(strip_url.findall(city)).strip("'[]'")
@@ -94,8 +94,8 @@ class CraigslistData(object):
 				scrape_count += int(total_results)
 				
 				print 'Found {} results for "{}" in {}'.format(total_results, 
-														self.og_query,
-														key)
+										self.og_query,
+										key)
 
 				if len(total_results):
 					if len(total_results) == 4:
