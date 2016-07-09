@@ -16,7 +16,7 @@ Beautiful Soup 4
 `pip install beautifulsoup4`
 
 ## Usage
-`$ python main.py (query to search) (cities or .txt file) (OPTIONAL: category)`
+`$ python main.py (query to search) (Cities: list or .txt file) (OPTIONAL: category)`
 
 1. Enter only one query and replace all spaces with underscores 
 
@@ -24,7 +24,11 @@ Beautiful Soup 4
 
 **IMPORTANT**
 
-Cities or URL's must be sepreated by a comma
+Cities or URL's must be separated by a comma and spaces replaced with a underscore
+
+`Example: auburn,https://raleigah.craigslist.org,https://charlottesville.craigslist.org`
+
+List of all category options can be found in searchdata.py
 
 
 
