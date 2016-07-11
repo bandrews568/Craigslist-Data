@@ -128,8 +128,6 @@ class CraigslistData(object):
 								total_count += 1
 							elif total_count == int(total_results):
 								break
-
-						total_count = 0
 						
 						for amount in self.makesoup(value).find_all( \
 									"span", {"class" : "price"})[::2]:
