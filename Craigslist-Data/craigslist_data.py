@@ -103,9 +103,9 @@ class CraigslistData:
         if soup_object is None:
             soup_object = self.makesoup(url)
 
-        title_info = soup_object.find_all("a", {"class": "result-title hdrlnk"})
-        price_info = soup_object.find_all("span", {"class": "result-price"})[::2]
-        url_info = soup_object.find_all("a", {"class": "result-title hdrlnk"})
+        title_info = soup_object.find_all('a', {'class': 'result-title hdrlnk'})
+        price_info = soup_object.find_all('span', {'class': 'result-price'})[::2]
+        url_info = soup_object.find_all('a', {'class': 'result-title hdrlnk'})
 
         title_list = []
         price_list = []
