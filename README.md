@@ -3,11 +3,13 @@ Easily scrape massive amounts of data off Craigslist using Python and Beautiful 
 ## Features 
 ~Supports scraping data from all 728 Craigslist cities
 
-~Search for a query in a particular category
+~Search for mulitiple queires
 
-~Saves all scraped data in a .txt file
+~Search for queires in specfic categories
+
+~Saves all scraped data in a .txt file in the current directory 
 ## Requirements
-Python 2.7.X 
+Python 3.X.X 
 
 `https://www.python.org/downloads/`
 
@@ -16,20 +18,8 @@ Beautiful Soup 4
 `pip install beautifulsoup4`
 
 ## Usage
-`$ python main.py (query to search) (Cities: list or .txt file) (OPTIONAL: category)`
-
-1. Enter only one query and replace all spaces with underscores 
-
-2. You can pass cities as direct URL's, by name or a combination of both. Pass from the command line or a .txt file.
+![alt tag](https://www.dropbox.com/s/m9dy0t52veatuv3/usage1.png?dl=0)
 
 **IMPORTANT**
 
-Cities or URL's must be separated by a comma and spaces replaced with a underscore
-
-`Example: auburn,https://raleigah.craigslist.org,https://charlottesville.craigslist.org`
-
-List of all category options can be found in searchdata.py
-
-
-
-
+Any spaces entered on command line must be replaced with an underscore
