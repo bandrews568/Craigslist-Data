@@ -18,7 +18,7 @@ Beautiful Soup 4
 `pip install beautifulsoup4`
 
 ## Usage
-![alt tag](https://photos-1.dropbox.com/t/2/AAAhBnSAUbNZW24Kyvx3XHLojfZVxg9_1Ri7PlLMD7vgCw/12/297861194/png/32x32/1/_/1/2/usage1.png/EKWNhKICGJ-HASACKAI/BLhgwNUx74QmNK-VvgLtUBu0SpoeKGp-Lx5dvLU6epI?size=1600x1200&size_mode=3)
+![alt tag](https://raw.githubusercontent.com/bandrews568/Craigslist-Data/master/usage1.png)
 
 **IMPORTANT**
 
