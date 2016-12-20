@@ -19,6 +19,8 @@ Beautiful Soup 4
 
 ## Usage
 ![alt tag](https://raw.githubusercontent.com/bandrews568/Craigslist-Data/master/usage1.png)
+**Example**
+![alt tag](https://raw.githubusercontent.com/bandrews568/Craigslist-Data/master/usage2.png)
 
 **IMPORTANT**
 
