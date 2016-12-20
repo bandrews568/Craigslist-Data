@@ -155,8 +155,8 @@ class CraigslistData:
                 file.write(item)
 
         results_location = os.getcwd()
-        filename_location = "File location: {}".format(results_location)
-        name_of_file = "Filename: {}".format(filename)
+        filename_location = 'File location: {}'.format(results_location)
+        name_of_file = 'Filename: {}'.format(filename)
         self.logger.info(filename_location)
         self.logger.info(name_of_file)
 
