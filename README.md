@@ -30,7 +30,7 @@ urls = ["https://raleigh.craigslist.org"]
 category = ["i"]
 
 craigslist_data = CraigslistData(queries, urls, category)
-# Scrape data for all queires and categories.
+# Scrape data for all queries and categories.
 craigslist_data.scrapedata()
 # Access all the item data
 # item_data is a list of tuples
