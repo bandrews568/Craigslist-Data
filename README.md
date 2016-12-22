@@ -5,7 +5,7 @@ Easily scrape massive amounts of data off Craigslist using Python and Beautiful 
 
 ~Search for mulitiple queries
 
-~Search for queires in specfic categories
+~Search for queries in specfic categories
 
 ~Saves all scraped data in a .txt file in the current directory 
 ## Requirements
