@@ -3,7 +3,7 @@ Easily scrape massive amounts of data off Craigslist using Python and Beautiful 
 ## Features 
 ~Supports scraping data from all 728 Craigslist cities
 
-~Search for mulitiple queires
+~Search for mulitiple queries
 
 ~Search for queires in specfic categories
 
